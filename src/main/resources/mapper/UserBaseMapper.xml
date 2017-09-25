@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="site.yanglong.promotion.mapper.UserBaseMapper">
+    <select id="selectByToken" resultType="UserBase">
+        SELECT
+        *
+        FROM user_base
+        WHERE appToken=#{token}
+    </select>
+
+    <select id="selectWithToken" resultType="UserBase">
+        SELECT
+        *
+        FROM user_base
+        WHERE appToken IS NOT NULL
+    </select>
+
+    <update id="deleteToken">
+        UPDATE user_base SET appToken=NULL where appToken=#{token}
+    </update>
+
+    <update id="updateAppToken">
+        UPDATE user_base SET appToken=NULL WHERE appToken=#{token}
+    </update>
+</mapper>

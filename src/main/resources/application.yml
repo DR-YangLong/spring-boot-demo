@@ -1,0 +1,71 @@
+# 端口
+server:
+      session:
+        timeout: "7200"
+        cookie:
+          max-age: "10080"
+      use-forward-headers: "true"
+      connection-timeout: "-1"
+#logger 配置
+logging:
+    config: "classpath:logback-spring.xml"
+spring:
+  profiles:
+    active: dev
+  datasource:
+        name: "datasource"
+        # druid数据源
+        type: "com.alibaba.druid.pool.DruidDataSource"
+        driver-class-name: "com.mysql.jdbc.Driver"
+        filters: "stat,config"
+        maxActive: "20"
+        initialSize: "1"
+        maxWait: "60000"
+        minIdle: "1"
+        timeBetweenEvictionRunsMillis: "60000"
+        minEvictableIdleTimeMillis: "300000"
+        validationQuery: "select 'x'"
+        testWhileIdle: "true"
+        testOnBorrow: "false"
+        testOnReturn: "false"
+        poolPreparedStatements: "true"
+        maxOpenPreparedStatements: "20"
+  #redis配置，修改为自己环境
+  redis:
+        host: "192.168.1.199"
+        port: "6379"
+        password:
+        database: "5"
+        pool:
+          max-active: "8"
+          max-idle: "8"
+          max-wait: "-1"
+          min-idle: "0"
+#druid监控
+druid:
+  stat:
+        userName: yanglong
+        password: yanglong
+        resetEnable: true
+        allow: ""
+        deny: ""
+#mybatis-plus
+mybatis-plus:
+  #映射文件
+  mapper-locations: classpath:/mapper/*Mapper.xml
+  #实体类包，数组
+  typeAliasesPackage: site.yanglong.promotion.model
+  global-config:
+    #id类型，com.baomidou.mybatisplus.enums.IdType.java
+    id-type: 0
+    #字段验证，com.baomidou.mybatisplus.enums.FieldStrategy
+    field-strategy: 0
+    #表字段是否以下划线分割
+    db-column-underline: false
+    #是否刷新mapper
+    refresh-mapper: true
+  configuration:
+    #如果数据库表**字段**本身采用下划线且POJO中为驼峰，此属性设为true。
+    map-underscore-to-camel-case: false
+    #是否开启mapper二级缓存
+    cache-enabled: false
