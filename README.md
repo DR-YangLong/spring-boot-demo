@@ -26,6 +26,6 @@ druid:
 4. 运行*Application.kt*中main方法。
 
 ## 测试
-1. druid监控：访问http://127.0.0.1:8080/druid，输入配置的用户名密码登录查看。
+1. druid监控：访问<http://127.0.0.1:8080/druid>，输入配置的用户名密码登录查看。
 2. web测试：查看UserController对应mapping和参数，访问测试。
 3. redis测试：查看RedisController对应mapping和参数，访问测试。
