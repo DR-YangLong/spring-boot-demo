@@ -13,11 +13,11 @@ druid监控配置application.yml中：
 ```yml
 druid:
   stat:
-   userName
-   password
-   resetEnable
-   allow
-   deny
+   userName: 
+   password: 
+   resetEnable: 
+   allow: 
+   deny: 
 ```
 下配置，如果需要其他配置，可到DruidStatConfig中自行扩展支持属性。
 
