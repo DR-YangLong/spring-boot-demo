@@ -59,7 +59,7 @@ mybatis-plus:
     #id类型，com.baomidou.mybatisplus.enums.IdType.java
     id-type: 0
     #字段验证，com.baomidou.mybatisplus.enums.FieldStrategy
-    field-strategy: 0
+    field-strategy: 1
     #表字段是否以下划线分割
     db-column-underline: false
     #是否刷新mapper
