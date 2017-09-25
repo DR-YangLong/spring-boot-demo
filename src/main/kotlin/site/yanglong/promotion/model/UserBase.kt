@@ -1,11 +1,14 @@
 package site.yanglong.promotion.model
 
 import com.baomidou.mybatisplus.activerecord.Model
+import com.baomidou.mybatisplus.annotations.TableField
+import com.baomidou.mybatisplus.annotations.TableId
 import com.baomidou.mybatisplus.annotations.TableName
 import java.io.Serializable
 
 @TableName("user_base")
 class UserBase : Model<UserBase>(), Serializable {
+    @TableId
     var userId: Long? = null
 
     var userMobile: String? = null
@@ -16,6 +19,7 @@ class UserBase : Model<UserBase>(), Serializable {
 
     var appToken: String? = null
 
+    @TableField
     var userStatus: String? = null
 
     companion object {
