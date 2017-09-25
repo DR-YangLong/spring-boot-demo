@@ -56,7 +56,6 @@ mybatis-plus:
   #实体类包，数组
   typeAliasesPackage: site.yanglong.promotion.model
   global-config:
-    dbType: mysql
     #id类型，com.baomidou.mybatisplus.enums.IdType.java
     id-type: 0
     #字段验证，com.baomidou.mybatisplus.enums.FieldStrategy
@@ -69,7 +68,7 @@ mybatis-plus:
     #capital-mode: true
     #序列接口实现类配置
     #key-generator: com.baomidou.springboot.xxx
-    #逻辑删除配置
+    #逻辑删除配置，实测不起作用，需要手动使用配置类配置
     #logic-delete-value: "1"
     #logic-not-delete-value: "0"
     #自定义填充策略接口实现

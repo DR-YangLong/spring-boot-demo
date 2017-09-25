@@ -20,7 +20,6 @@ class MyBatisPlusConfig {
     @Bean
     fun paginationInterceptor(): PaginationInterceptor {
         val paginationInterceptor = PaginationInterceptor()
-        paginationInterceptor.setDialectClazz(DBType.MYSQL.db)
         return paginationInterceptor
     }
 
