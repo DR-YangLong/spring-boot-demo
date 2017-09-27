@@ -110,6 +110,23 @@
             <artifactId>fastjson</artifactId>
             <version>${fastjson.version}</version>
         </dependency>
+        <!-- autoload-cache begin-->
+        <dependency>
+            <groupId>com.github.qiujiayu</groupId>
+            <artifactId>autoload-cache-spring-boot-starter</artifactId>
+            <version>6.5</version>
+        </dependency>
+        <dependency>
+            <groupId>ognl</groupId>
+            <artifactId>ognl</artifactId>
+            <version>3.2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.caucho</groupId>
+            <artifactId>hessian</artifactId>
+            <version>4.0.51</version>
+        </dependency>
+        <!-- autoload-cache end-->
     </dependencies>
 
     <build>

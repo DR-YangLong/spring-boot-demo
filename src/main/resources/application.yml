@@ -80,3 +80,43 @@ mybatis-plus:
     map-underscore-to-camel-case: false
     #是否开启mapper二级缓存
     cache-enabled: false
+#可以直接使用，不用配置都有默认值，此处示例
+autoload:
+  cache:
+    config:
+      #命名空间，在多个模块共用一个缓存环境时，避免key冲突；
+      namespace: demo
+      #处理自动加载队列的线程数量,默认值为10；
+      threadCnt: 10
+      #自动加载队列中允许存放的最大容量，默认值为20000；
+      maxElement: 20000
+      #是否打印比较耗时的请求，默认值：true；
+      printSlowLog: true
+      #当请求耗时超过此值时，记录目录（printSlowLog=true 时才有效），单位：毫秒；默认值500；
+      slowLoadTime: 500
+      #自动加载队列排序算法,
+      #0：按在Map中存储的顺序（即无序）；
+      #1：越接近过期时间，越耗时的排在最前；
+      #2：根据请求次数，倒序排序，请求次数越多，说明使用频率越高，造成并发的可能越大。
+      #更详细的说明，请查看代码com.jarvis.cache.type.AutoLoadQueueSortType
+      sortType: 1
+      #加载数据之前去缓存服务器中检查，数据是否快过期，
+      #如果应用程序部署的服务器数量比较少，设置为false,
+      #如果部署的服务器比较多，可以考虑设置为true；
+      checkFromCacheBeforeLoad: false
+      #单个线程中执行自动加载的时间间隔, 此值越小，遍历自动加载队列频率越高，越消耗CPU；
+      autoLoadPeriod: 80
+      #注册表达式中用到的自定义函数；map结构
+      #functions:
+      #异步刷新缓存线程池的 corePoolSize，默认值：2
+      refreshThreadPoolSize: 3
+      #异步刷新缓存线程池的 maximumPoolSize ，默认值：20；
+      refreshThreadPoolMaxSize: 30
+      #异步刷新缓存线程池的 keepAliveTime。默认值20，单位分钟；
+      refreshThreadPoolkeepAliveTime: 20
+      #异步刷新缓存队列容量，默认值：2000；
+      refreshQueueCapacity: 2000
+      #加载数据重试次数，默认值为1（即不尝试）
+      loadDataTryCnt: 1
+    enable: true
+    namespace-enable: true
