@@ -6,6 +6,7 @@ import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.data.redis.core.script.DefaultRedisScript
 import org.springframework.data.redis.core.script.RedisScript
 import org.springframework.scripting.support.ResourceScriptSource
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import site.yanglong.promotion.vo.Status
@@ -85,4 +86,9 @@ class RedisController {
         return result
     }
 
+    @GetMapping("keys")
+    fun keys():Set<String>?{
+        val result:Set<String>? =redisTemplate?.keys("*")
+        return result
+    }
 }
