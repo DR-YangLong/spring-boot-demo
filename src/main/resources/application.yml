@@ -72,8 +72,7 @@ mybatis-plus:
     logic-delete-value: "1"
     logic-not-delete-value: "0"
     #自定义填充策略接口实现
-    #meta-object-handler: com.baomidou.springboot.xxx
-    #自定义SQL注入器
+    meta-object-handler: site.yanglong.promotion.config.UserFillHandler  #自定义SQL注入器
     sql-injector: com.baomidou.mybatisplus.mapper.LogicSqlInjector
   configuration:
     #如果数据库表**字段**本身采用下划线且POJO中为驼峰，此属性设为true。

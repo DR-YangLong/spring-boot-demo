@@ -5,6 +5,7 @@ CREATE TABLE `user_base` (
   `userPwd` varchar(128) DEFAULT NULL COMMENT '用户密码',
   `appToken` varchar(128) DEFAULT NULL COMMENT 'token',
   `userStatus` char(1) DEFAULT '0' COMMENT '用户状态，0正常，1禁用，2登录锁定',
+  `modifyDate` datetime DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`userId`),
   UNIQUE KEY `index_uq_mobile` (`userMobile`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户基础表'
