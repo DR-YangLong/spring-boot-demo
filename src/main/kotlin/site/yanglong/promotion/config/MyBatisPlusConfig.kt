@@ -1,5 +1,6 @@
 package site.yanglong.promotion.config
 
+import com.baomidou.mybatisplus.plugins.OptimisticLockerInterceptor
 import com.baomidou.mybatisplus.plugins.PaginationInterceptor
 import org.mybatis.spring.annotation.MapperScan
 import org.springframework.context.annotation.Bean
@@ -20,6 +21,12 @@ class MyBatisPlusConfig {
     fun paginationInterceptor(): PaginationInterceptor {
         val paginationInterceptor = PaginationInterceptor()
         return paginationInterceptor
+    }
+
+    @Bean
+    fun optimisticLockerInterceptor(): OptimisticLockerInterceptor {
+        val olp = OptimisticLockerInterceptor()
+        return olp
     }
 
 }
