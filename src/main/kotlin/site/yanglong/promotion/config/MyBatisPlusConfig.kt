@@ -17,12 +17,19 @@ import org.springframework.context.annotation.Configuration
 @MapperScan("site.yanglong.promotion.mapper")
 class MyBatisPlusConfig {
 
+    /**
+     * 分页插件配置
+     */
     @Bean
     fun paginationInterceptor(): PaginationInterceptor {
         val paginationInterceptor = PaginationInterceptor()
         return paginationInterceptor
     }
 
+
+    /**
+     * 乐观锁插件配置
+     */
     @Bean
     fun optimisticLockerInterceptor(): OptimisticLockerInterceptor {
         val olp = OptimisticLockerInterceptor()

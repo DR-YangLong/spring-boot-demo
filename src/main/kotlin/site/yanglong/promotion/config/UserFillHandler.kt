@@ -28,7 +28,7 @@ class UserFillHandler : MetaObjectHandler() {
         }
     }
 
-    //更新是自动填充
+    //更新时自动填充
     override fun updateFill(metaObject: MetaObject?) {
         logger.debug("=========start update fill pwd field==============")
         setFieldValByName("modifyDate", Date(), metaObject)
