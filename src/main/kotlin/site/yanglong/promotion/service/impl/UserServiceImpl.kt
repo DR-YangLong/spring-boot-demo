@@ -23,4 +23,16 @@ class UserServiceImpl : ServiceImpl<UserBaseMapper, UserBase>(), UserService {
         wrapper.like("userName", name)
         return baseMapper.selectPage(Page<UserBase>(page, size), wrapper)
     }
+
+    //乐观锁，不用事务
+    override fun updateByOptimisticLock(user: UserBase): Boolean {
+        if (user.userId == null) return false
+        val userBase: UserBase? = baseMapper.selectById(user.userId)
+        if (null != userBase) {
+            val version: Long? = userBase.lockVersion
+            user.lockVersion = version
+            return baseMapper.updateById(user) > 0
+        }
+        return false
+    }
 }

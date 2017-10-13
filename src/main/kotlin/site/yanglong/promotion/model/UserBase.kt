@@ -1,10 +1,7 @@
 package site.yanglong.promotion.model
 
 import com.baomidou.mybatisplus.activerecord.Model
-import com.baomidou.mybatisplus.annotations.TableField
-import com.baomidou.mybatisplus.annotations.TableId
-import com.baomidou.mybatisplus.annotations.TableLogic
-import com.baomidou.mybatisplus.annotations.TableName
+import com.baomidou.mybatisplus.annotations.*
 import com.baomidou.mybatisplus.enums.FieldFill
 import java.io.Serializable
 import java.util.*
@@ -24,11 +21,14 @@ class UserBase : Model<UserBase>(), Serializable {
     var appToken: String? = null
 
     @TableField//逻辑删除
-    @TableLogic//逻辑删除
+    @TableLogic//逻辑删除，公用可抽象到抽象父类
     var userStatus: String? = null
 
-    @TableField(fill = FieldFill.UPDATE)
+    @TableField(fill = FieldFill.UPDATE)//公用可抽象到抽象父类
     var modifyDate: Date? = null
+
+    @Version//公用可抽象到抽象父类
+    var lockVersion: Long?=null
 
     companion object {
         private const val serialVersionUID = 7584846556783479679L

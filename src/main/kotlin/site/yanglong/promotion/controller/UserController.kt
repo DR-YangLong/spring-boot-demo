@@ -62,4 +62,13 @@ class UserController {
         }
         return result
     }
+
+    @PutMapping("opl")
+    fun optimisticLock(user: UserBase): StatusResult<String> {
+        val result: StatusResult<String> = StatusResult()
+        result.data = "测试乐观锁"
+        val success: Boolean = userService?.updateByOptimisticLock(user) ?: false
+        if (success) result.setStatus(Status.SUCCESS) else result.setStatus(Status.NORMAL_FAILURE)
+        return result
+    }
 }

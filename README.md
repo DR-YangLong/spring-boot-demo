@@ -5,6 +5,7 @@
 * log4j，logback日志框架
 * fastjson，jackson框架
 * spring boot框架
+* autoloadcache缓存框架
 
 ## 初始化
 1. mysql的test数据库执行init.sql，创建表。安装和运行redis。

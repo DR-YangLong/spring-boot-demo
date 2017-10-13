@@ -14,4 +14,7 @@ import site.yanglong.promotion.model.UserBase
 interface UserService :IService<UserBase>{
     @Cache(expire = 500,key = "'findUserByNamePage:'+#args[0]+':'+#args[1]+':'+#args[2]",autoload = true,requestTimeout = 18000)
     fun findByName(name:String,page:Int,size:Int):List<UserBase>
+
+
+    fun updateByOptimisticLock(user:UserBase):Boolean
 }
