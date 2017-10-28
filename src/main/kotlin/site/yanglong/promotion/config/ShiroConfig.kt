@@ -21,6 +21,7 @@ import org.apache.shiro.web.session.mgt.DefaultWebSessionManager
 import org.slf4j.LoggerFactory
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.cache.ehcache.EhCacheCacheManager
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.DependsOn
@@ -30,6 +31,7 @@ import site.yanglong.promotion.config.shiro.authentication.RealmService
 import site.yanglong.promotion.config.shiro.authentication.ShiroRealm
 import site.yanglong.promotion.config.shiro.dynamic.DynamicPermissionServiceImpl
 import site.yanglong.promotion.config.shiro.dynamic.JdbcPermissionDao
+import site.yanglong.promotion.context
 import java.util.*
 import javax.servlet.Filter
 
@@ -37,17 +39,15 @@ import javax.servlet.Filter
 class ShiroConfig {
     private val log = LoggerFactory.getLogger(ShiroConfig::class.java)
     @Autowired
-    var realmService: RealmService? = null
-
-    @Autowired
-    var jdbcPermissionDao:JdbcPermissionDao?=null
+    private var cachemanager:EhCacheCacheManager?=null
 
     @Bean(name = arrayOf("ehCacheManager"))
     @Primary
     fun ehCacheManager(): EhCacheManager {
-        val cacheManager = EhCacheManager()
-        cacheManager.setCacheManagerConfigFile("classpath:ehcache.xml")
-        return cacheManager
+        val ehCacheManager=EhCacheManager()
+        val manager=cachemanager?.cacheManager
+        ehCacheManager.cacheManager=manager
+      return ehCacheManager
     }
 
     /**
@@ -57,11 +57,11 @@ class ShiroConfig {
      */
     @Bean(name = arrayOf("shiroRealm"))
     @DependsOn("lifecycleBeanPostProcessor")
-    fun shiroRealm(): ShiroRealm {
+    fun shiroRealm(realmService: RealmService): ShiroRealm {
         val shiroRealm = ShiroRealm()
         shiroRealm.name="drRealm"
+        shiroRealm.realmService=realmService
         shiroRealm.cacheManager = ehCacheManager()
-        shiroRealm.realmService = realmService
         shiroRealm.credentialsMatcher= credentialsMatcher()
         shiroRealm.isCachingEnabled=true
         shiroRealm.isAuthenticationCachingEnabled=true//认证缓存
@@ -159,9 +159,9 @@ class ShiroConfig {
      * @return securityManager
      */
     @Bean(name = arrayOf("securityManager"))
-    fun webSecurityManager(): DefaultWebSecurityManager {
+    fun webSecurityManager(shiroRealm: ShiroRealm): DefaultWebSecurityManager {
         val securityManager = DefaultWebSecurityManager()
-        securityManager.setRealm(shiroRealm())
+        securityManager.setRealm(shiroRealm)
         securityManager.cacheManager = ehCacheManager()
         securityManager.rememberMeManager=cookieRememberMeManager()
         securityManager.sessionManager=sessionManager()
@@ -194,7 +194,7 @@ class ShiroConfig {
      * @return
      */
     @Bean(name = arrayOf("shiroFilter"))
-    fun shiroFilter(): ShiroFilterFactoryBean {
+    fun shiroFilter(webSecurityManager: DefaultWebSecurityManager): ShiroFilterFactoryBean {
         val shiroFilter = ShiroFilterFactoryBean()
         shiroFilter.loginUrl = "/login"
         shiroFilter.successUrl = "/index"
@@ -202,7 +202,7 @@ class ShiroConfig {
         val filterChainDefinitionMapping = LinkedHashMap<String, String>()
         filterChainDefinitionMapping.put("/admin", "authc,roles[admin]")
         shiroFilter.filterChainDefinitionMap = filterChainDefinitionMapping
-        shiroFilter.securityManager = webSecurityManager()
+        shiroFilter.securityManager = webSecurityManager
         val filters = HashMap<String, Filter>()
         filters.put("anon", AnonymousFilter())
         filters.put("authc", FormAuthenticationFilter())
@@ -216,10 +216,12 @@ class ShiroConfig {
     }
 
     @Bean("dynamicPermissionService")
-    fun filterChainDefinitionsFactory(): DynamicPermissionServiceImpl{
+    @DependsOn("shiroFilter")
+    fun filterChainDefinitionsFactory(jdbcPermissionDao: JdbcPermissionDao): DynamicPermissionServiceImpl{
+        val filter=context?.getBean(ShiroFilterFactoryBean::class.java)
         val service =DynamicPermissionServiceImpl()
+        service.shiroFilter=filter?.`object` as? AbstractShiroFilter
         service.dynamicPermissionDao=jdbcPermissionDao
-        service.shiroFilter=shiroFilter().`object` as? AbstractShiroFilter
         service.definitions="/**/favicon.ico=anon\n" +
                 "/logout = logout"
         return service

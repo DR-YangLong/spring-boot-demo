@@ -2,6 +2,7 @@ package site.yanglong.promotion.config.shiro.dynamic
 
 import org.apache.shiro.config.Ini
 import org.apache.shiro.util.CollectionUtils
+import org.apache.shiro.util.StringUtils
 import org.apache.shiro.web.config.IniFilterChainResolverFactory
 import org.apache.shiro.web.filter.mgt.DefaultFilterChainManager
 import org.apache.shiro.web.filter.mgt.PathMatchingFilterChainResolver
@@ -78,12 +79,15 @@ class DynamicPermissionServiceImpl : DynamicPermissionService {
      *
      * @return Section
      */
-    private fun generateSection(): Map<String, String> {
-        val ini = Ini()
-        ini.load(definitions) // 加载资源文件节点串定义的初始化权限信息
-        var section: Ini.Section = ini.getSection(IniFilterChainResolverFactory.URLS) // 使用默认节点
-        if (CollectionUtils.isEmpty(section)) {
-            section = ini.getSection(Ini.DEFAULT_SECTION_NAME)//如不存在默认节点切割,则使用空字符转换
+    private fun generateSection(): Map<String, String>? {
+        var section:Ini.Section?=null
+        if(StringUtils.hasLength(definitions)) {
+            val ini = Ini()
+            ini.load(definitions) // 加载资源文件节点串定义的初始化权限信息
+            section = ini.getSection(IniFilterChainResolverFactory.URLS) // 使用默认节点
+            if (CollectionUtils.isEmpty(section)) {
+                section = ini.getSection(Ini.DEFAULT_SECTION_NAME)//如不存在默认节点切割,则使用空字符转换
+            }
         }
         /**
          * 加载非初始化定义的权限信息
@@ -94,7 +98,7 @@ class DynamicPermissionServiceImpl : DynamicPermissionService {
                 logger.error("*********获取初始静态配置URL权限映射失败，将使用外部加载权限信息进行配置*********")
                 return permissionMap
             } else {
-                section.putAll(permissionMap)
+                section?.putAll(permissionMap)
             }
         }
         return section

@@ -1,9 +1,8 @@
 package site.yanglong.promotion.service.impl
 
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.Repository
 import site.yanglong.promotion.config.shiro.dynamic.JdbcPermissionDao
-
-import java.util.LinkedHashMap
+import java.util.*
 
 /**
  * functional describe:基于数据库实现的动态权限dao
@@ -11,7 +10,7 @@ import java.util.LinkedHashMap
  * @author DR.YangLong [410357434@163.com]
  * @version 1.0    2017/10/20
  */
-@Component
+@Repository
 class JdbcPermissionDaoImpl : JdbcPermissionDao {
 
     override fun generateDefinitions(): LinkedHashMap<String, String> {

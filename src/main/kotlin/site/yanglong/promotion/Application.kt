@@ -2,6 +2,7 @@ package site.yanglong.promotion
 
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.context.ApplicationContext
 
 /**
  * package: site.yanglong.promotion <br/>
@@ -12,9 +13,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
  */
 @SpringBootApplication(scanBasePackages = arrayOf("site.yanglong.promotion"))
 class Application
+var context: ApplicationContext?=null
 
 fun main(args: Array<String>) {
     println("***********starting***********")
-    SpringApplication.run(Application::class.java, *args)
+    context=SpringApplication.run(Application::class.java, *args)
     println("***********started***********")
 }

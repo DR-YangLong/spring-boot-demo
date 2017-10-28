@@ -10,7 +10,7 @@ import site.yanglong.promotion.config.shiro.authentication.RealmService
  * @author DR.YangLong [410357434@163.com]
  * @version 1.0    2017/10/20
  */
-@Service
+@Service("realmService")
 class RealmServiceImpl : RealmService {
 
     override fun getUniqueIdentity(userName: String): Any {
