@@ -16,7 +16,7 @@ spring:
         name: "datasource"
         # druid数据源
         type: "com.alibaba.druid.pool.DruidDataSource"
-        driver-class-name: "com.mysql.jdbc.Driver"
+        driver-class-name: "com.mysql.cj.jdbc.Driver"
         filters: "stat,config"
         maxActive: "20"
         initialSize: "1"
@@ -47,8 +47,8 @@ druid:
         userName: yanglong
         password: yanglong
         resetEnable: true
-        allow: ""
-        deny: ""
+        allow:
+        deny:
 #mybatis-plus
 mybatis-plus:
   #映射文件
@@ -119,3 +119,43 @@ autoload:
       loadDataTryCnt: 1
     enable: true
     namespace-enable: true
+shiro:
+  config:
+    loginUrl: "/shiro/login"
+    successUrl: "/shiro/user"
+    unauthorizedUrl: "/shiro/login"
+    cachingEnabled: "true"
+    authenticationCachingEnabled: "true"
+    authenticationCacheName: "authentication_cache"
+    authorizationCachingEnabled: "true"
+    authorizationCacheName: "authorization_cache"
+    rmCookieName: "rememberMe"
+    rmCookiePath: "/"
+    rmCookieMaxAge: "604800"
+    rmCipherKey: "4AvVhmFLUs0KTA3Kprsdag"
+    cookieIsHttpOnly: "true"
+    sessionCacheName: "active_session_cache"
+    sessionCookieName: "JID"
+    sessionCookieDomain: "yanglong.com"
+    sessionCookieMaxAge: "-1"
+    sessionCookiePath: "/"
+    globalSessionTimeout: "1800000"
+    definitionMap:
+      admin/**: "authc,roles[admin]"
+    filtersMap:
+      anon: org.apache.shiro.web.filter.authc.AnonymousFilter.class
+      authc: org.apache.shiro.web.filter.authc.PassThruAuthenticationFilter.class
+      user: org.apache.shiro.web.filter.authc.UserFilter.class
+      logout: org.apache.shiro.web.filter.authc.PassThruAuthenticationFilter.LogoutFilter.class
+      roles: org.apache.shiro.web.filter.authz.RolesAuthorizationFilter.class
+      perms: org.apache.shiro.web.filter.authz.PermissionsAuthorizationFilter.class
+    definitions: "/**/favicon.ico=anon /logout=logout"
+    enablePerms: "true"
+    enableRoles: "true"
+    identityInMapKey: "id"
+    passwordInMapKey: "pwd"
+    userStatusInMapKey: "status"
+    userStatusForbidden: "1"
+    userStatusLocked: "2"
+    rolesInMapKey: "roles"
+    permsInMapKey: "perms"

@@ -1,5 +1,6 @@
 package site.yanglong.promotion.config
 
+import org.apache.commons.collections.MapUtils
 import org.apache.shiro.authc.credential.CredentialsMatcher
 import org.apache.shiro.cache.ehcache.EhCacheManager
 import org.apache.shiro.codec.Base64
@@ -8,8 +9,8 @@ import org.apache.shiro.spring.LifecycleBeanPostProcessor
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean
 import org.apache.shiro.web.filter.authc.AnonymousFilter
-import org.apache.shiro.web.filter.authc.FormAuthenticationFilter
 import org.apache.shiro.web.filter.authc.LogoutFilter
+import org.apache.shiro.web.filter.authc.PassThruAuthenticationFilter
 import org.apache.shiro.web.filter.authc.UserFilter
 import org.apache.shiro.web.filter.authz.PermissionsAuthorizationFilter
 import org.apache.shiro.web.filter.authz.RolesAuthorizationFilter
@@ -21,6 +22,8 @@ import org.apache.shiro.web.session.mgt.DefaultWebSessionManager
 import org.slf4j.LoggerFactory
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
+import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.cache.ehcache.EhCacheCacheManager
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -31,23 +34,84 @@ import site.yanglong.promotion.config.shiro.authentication.RealmService
 import site.yanglong.promotion.config.shiro.authentication.ShiroRealm
 import site.yanglong.promotion.config.shiro.dynamic.DynamicPermissionServiceImpl
 import site.yanglong.promotion.config.shiro.dynamic.JdbcPermissionDao
-import site.yanglong.promotion.context
 import java.util.*
 import javax.servlet.Filter
+import kotlin.collections.HashMap
 
 @Configuration
+@ConfigurationProperties(prefix = "shiro.config")
 class ShiroConfig {
     private val log = LoggerFactory.getLogger(ShiroConfig::class.java)
+    var loginUrl: String? = null
+    var successUrl: String? = null
+    var unauthorizedUrl: String? = null
+    var cachingEnabled: Boolean = true
+    var authenticationCachingEnabled: Boolean = true
+    var authenticationCacheName: String = "authentication_cache"
+    var authorizationCachingEnabled: Boolean = true
+    var authorizationCacheName: String = "authorization_cache"
+    var rmCookieName: String = "rememberMe"
+    var rmCookiePath: String = "/"
+    var rmCookieMaxAge: Int = 604800
+    var rmCipherKey: String = "4AvVhmFLUs0KTA3Kprsdag=="
+    var cookieIsHttpOnly: Boolean = true
+    var sessionCacheName: String = "active_session_cache"
+    var sessionCookieName: String = "JID"
+    var sessionCookieDomain = "yanglong.com"//注意用域名时必须匹配或者设置跨域
+    var sessionCookieMaxAge = -1
+    var sessionCookiePath = "/"
+    var globalSessionTimeout: Long = 1800000
+    var definitionMap= LinkedHashMap<String, String>()
+    var filtersMap= HashMap<String, Class<Filter>>()
+    var definitions="/**/favicon.ico=anon \n /logout=logout"
+    /**
+     * 是否使用权限
+     */
+    var enablePerms = false
+    /**
+     * 是否使用角色
+     */
+    var enableRoles = true
+    /**
+     * 用户身份唯一标识在Map中的key
+     */
+    var identityInMapKey = "id"
+    /**
+     * 密码在map中的key
+     */
+    var passwordInMapKey = "pwd"
+    /**
+     * 用户状态在map中的key
+     */
+    var userStatusInMapKey = "status"
+    /**
+     * 账号禁用时匹配的字符串的值
+     */
+    var userStatusForbidden = "1"
+    /**
+     * 账号锁定时匹配的字符串的值
+     */
+    var userStatusLocked = "2"
+    /**
+     * 角色在map中的KEY
+     */
+    var rolesInMapKey = "roles"
+    /**
+     * 权限在map中的KEY
+     */
+    var permsInMapKey = "perms"
+
     @Autowired
-    private var cachemanager:EhCacheCacheManager?=null
+    private var cachemanager: EhCacheCacheManager? = null
+    private var shiroFilter: ShiroFilterFactoryBean? = null
 
     @Bean(name = arrayOf("ehCacheManager"))
     @Primary
     fun ehCacheManager(): EhCacheManager {
-        val ehCacheManager=EhCacheManager()
-        val manager=cachemanager?.cacheManager
-        ehCacheManager.cacheManager=manager
-      return ehCacheManager
+        val ehCacheManager = EhCacheManager()
+        val manager = cachemanager?.cacheManager
+        ehCacheManager.cacheManager = manager
+        return ehCacheManager
     }
 
     /**
@@ -57,17 +121,26 @@ class ShiroConfig {
      */
     @Bean(name = arrayOf("shiroRealm"))
     @DependsOn("lifecycleBeanPostProcessor")
-    fun shiroRealm(realmService: RealmService): ShiroRealm {
+    fun shiroRealm(realmService: RealmService, credentialsMatcher: CredentialsMatcher): ShiroRealm {
         val shiroRealm = ShiroRealm()
-        shiroRealm.name="drRealm"
-        shiroRealm.realmService=realmService
+        shiroRealm.name = "drRealm"
+        shiroRealm.identity_in_map_key=identityInMapKey
+        shiroRealm.password_in_map_key=passwordInMapKey
+        shiroRealm.isEnablePerms=enablePerms
+        shiroRealm.isEnableRoles=enableRoles
+        shiroRealm.perms_in_map_key=permsInMapKey
+        shiroRealm.roles_in_map_key=rolesInMapKey
+        shiroRealm.user_status_in_map_key=userStatusInMapKey
+        shiroRealm.user_status_forbidden=userStatusForbidden
+        shiroRealm.user_status_locked=userStatusLocked
+        shiroRealm.realmService = realmService
         shiroRealm.cacheManager = ehCacheManager()
-        shiroRealm.credentialsMatcher= credentialsMatcher()
-        shiroRealm.isCachingEnabled=true
-        shiroRealm.isAuthenticationCachingEnabled=true//认证缓存
-        shiroRealm.authenticationCacheName="authentication_cache"
-        shiroRealm.isAuthorizationCachingEnabled=true//授权缓存
-        shiroRealm.authorizationCacheName="authorization_cache"
+        shiroRealm.credentialsMatcher = credentialsMatcher
+        shiroRealm.isCachingEnabled = cachingEnabled
+        shiroRealm.isAuthenticationCachingEnabled = authenticationCachingEnabled//认证缓存
+        shiroRealm.authenticationCacheName = authenticationCacheName
+        shiroRealm.isAuthorizationCachingEnabled = authorizationCachingEnabled//授权缓存
+        shiroRealm.authorizationCacheName = authorizationCacheName
         return shiroRealm
     }
 
@@ -98,10 +171,10 @@ class ShiroConfig {
      */
     @Bean(name = arrayOf("rememberMeCookie"))
     fun rememberMeCookie(): SimpleCookie {
-        val cookie=SimpleCookie("rememberMe")
-        cookie.isHttpOnly=true
-        cookie.maxAge=604800//有效期，秒，7天
-        cookie.path="/"
+        val cookie = SimpleCookie(rmCookieName)
+        cookie.isHttpOnly = cookieIsHttpOnly
+        cookie.maxAge = rmCookieMaxAge//有效期，秒，7天
+        cookie.path = rmCookiePath
         return cookie
     }
 
@@ -110,9 +183,9 @@ class ShiroConfig {
      */
     @Bean
     fun cookieRememberMeManager(): CookieRememberMeManager {
-        val remember=CookieRememberMeManager()
-        remember.cipherKey=Base64.decode("4AvVhmFLUs0KTA3Kprsdag==")//用于cookie加密的key
-        remember.cookie=rememberMeCookie()//cookie
+        val remember = CookieRememberMeManager()
+        remember.cipherKey = Base64.decode(rmCipherKey)//用于cookie加密的key
+        remember.cookie = rememberMeCookie()//cookie
         return remember
     }
 
@@ -122,9 +195,9 @@ class ShiroConfig {
      */
     @Bean
     fun sessionDAO(): EnterpriseCacheSessionDAO {
-        val sessionDAO=EnterpriseCacheSessionDAO()
-        sessionDAO.activeSessionsCacheName="active_session_cache"//session缓存的名称
-        sessionDAO.cacheManager= ehCacheManager()//缓存管理器
+        val sessionDAO = EnterpriseCacheSessionDAO()
+        sessionDAO.activeSessionsCacheName = sessionCacheName//session缓存的名称
+        sessionDAO.cacheManager = ehCacheManager()//缓存管理器
         return sessionDAO
     }
 
@@ -132,12 +205,12 @@ class ShiroConfig {
      * 会话cookie
      */
     @Bean
-    fun sessionIdCookie():SimpleCookie{
-        val sessionIdCookie=SimpleCookie("JID")
-        sessionIdCookie.domain="yanglong.com"//注意用域名时必须匹配或者设置跨域
-        sessionIdCookie.isHttpOnly=false
-        sessionIdCookie.maxAge=-1//cookie有效期，单位秒，-1为浏览器进度
-        sessionIdCookie.path="/"//cookie路径
+    fun sessionIdCookie(): SimpleCookie {
+        val sessionIdCookie = SimpleCookie(sessionCookieName)
+        sessionIdCookie.domain = sessionCookieDomain//注意用域名时必须匹配或者设置跨域
+        sessionIdCookie.isHttpOnly = cookieIsHttpOnly
+        sessionIdCookie.maxAge = sessionCookieMaxAge//cookie有效期，单位秒，-1为浏览器进度
+        sessionIdCookie.path = sessionCookiePath//cookie路径
         return sessionIdCookie
     }
 
@@ -146,13 +219,14 @@ class ShiroConfig {
      */
     @Bean
     fun sessionManager(): DefaultWebSessionManager {
-        val sessionManager=DefaultWebSessionManager()
-        sessionManager.sessionDAO=sessionDAO()
-        sessionManager.isSessionIdCookieEnabled=true//使用cookie传递sessionId
-        sessionManager.sessionIdCookie=sessionIdCookie()
-        sessionManager.globalSessionTimeout=1800000//服务端session过期时间，单位毫秒
+        val sessionManager = DefaultWebSessionManager()
+        sessionManager.sessionDAO = sessionDAO()
+        sessionManager.isSessionIdCookieEnabled = true//使用cookie传递sessionId
+        sessionManager.sessionIdCookie = sessionIdCookie()
+        sessionManager.globalSessionTimeout = globalSessionTimeout//服务端session过期时间，单位毫秒
         return sessionManager
     }
+
     /**
      * securityManager
      *
@@ -163,8 +237,8 @@ class ShiroConfig {
         val securityManager = DefaultWebSecurityManager()
         securityManager.setRealm(shiroRealm)
         securityManager.cacheManager = ehCacheManager()
-        securityManager.rememberMeManager=cookieRememberMeManager()
-        securityManager.sessionManager=sessionManager()
+        securityManager.rememberMeManager = cookieRememberMeManager()
+        securityManager.sessionManager = sessionManager()
         return securityManager
     }
 
@@ -196,34 +270,37 @@ class ShiroConfig {
     @Bean(name = arrayOf("shiroFilter"))
     fun shiroFilter(webSecurityManager: DefaultWebSecurityManager): ShiroFilterFactoryBean {
         val shiroFilter = ShiroFilterFactoryBean()
-        shiroFilter.loginUrl = "/login"
-        shiroFilter.successUrl = "/index"
-        shiroFilter.unauthorizedUrl = "/forbidden"
-        val filterChainDefinitionMapping = LinkedHashMap<String, String>()
-        filterChainDefinitionMapping.put("/admin", "authc,roles[admin]")
-        shiroFilter.filterChainDefinitionMap = filterChainDefinitionMapping
+        shiroFilter.loginUrl = loginUrl
+        shiroFilter.successUrl = successUrl
+        shiroFilter.unauthorizedUrl = unauthorizedUrl
+        if (MapUtils.isNotEmpty(definitionMap)) {
+            shiroFilter.filterChainDefinitionMap = definitionMap
+        }
         shiroFilter.securityManager = webSecurityManager
         val filters = HashMap<String, Filter>()
-        filters.put("anon", AnonymousFilter())
-        filters.put("authc", FormAuthenticationFilter())
-        filters.put("logout", LogoutFilter())
-        filters.put("roles", RolesAuthorizationFilter())
-        filters.put("perms", PermissionsAuthorizationFilter())
-        filters.put("user", UserFilter())
+        if (MapUtils.isNotEmpty(filtersMap)) {
+            filtersMap?.forEach { t, u -> filters.put(t, u.newInstance()) }
+        } else {
+            filters.put("anon", AnonymousFilter())
+            filters.put("authc", PassThruAuthenticationFilter())
+            filters.put("logout", LogoutFilter())
+            filters.put("roles", RolesAuthorizationFilter())
+            filters.put("perms", PermissionsAuthorizationFilter())
+            filters.put("user", UserFilter())
+        }
         shiroFilter.filters = filters
         log.debug("shiro初始化完成，filter数量为:{}", shiroFilter.filters.size)
+        this.shiroFilter = shiroFilter
         return shiroFilter
     }
 
     @Bean("dynamicPermissionService")
-    @DependsOn("shiroFilter")
-    fun filterChainDefinitionsFactory(jdbcPermissionDao: JdbcPermissionDao): DynamicPermissionServiceImpl{
-        val filter=context?.getBean(ShiroFilterFactoryBean::class.java)
-        val service =DynamicPermissionServiceImpl()
-        service.shiroFilter=filter?.`object` as? AbstractShiroFilter
-        service.dynamicPermissionDao=jdbcPermissionDao
-        service.definitions="/**/favicon.ico=anon\n" +
-                "/logout = logout"
+    @ConditionalOnBean(AbstractShiroFilter::class, ShiroFilterFactoryBean::class)
+    fun filterChainDefinitionsFactory(jdbcPermissionDao: JdbcPermissionDao): DynamicPermissionServiceImpl {
+        val service = DynamicPermissionServiceImpl()
+        service.shiroFilter = shiroFilter?.`object` as? AbstractShiroFilter
+        service.dynamicPermissionDao = jdbcPermissionDao
+        service.definitions = definitions
         return service
     }
 }

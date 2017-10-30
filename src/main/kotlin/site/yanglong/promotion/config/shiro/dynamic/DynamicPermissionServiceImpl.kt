@@ -8,14 +8,15 @@ import org.apache.shiro.web.filter.mgt.DefaultFilterChainManager
 import org.apache.shiro.web.filter.mgt.PathMatchingFilterChainResolver
 import org.apache.shiro.web.servlet.AbstractShiroFilter
 import org.slf4j.LoggerFactory
-import java.util.LinkedHashMap
+import java.util.*
 import javax.annotation.PostConstruct
 
+
 class DynamicPermissionServiceImpl : DynamicPermissionService {
-     private val logger = LoggerFactory.getLogger(DynamicPermissionServiceImpl::class.java)
-     var shiroFilter: AbstractShiroFilter? = null
-     var dynamicPermissionDao: DynamicPermissionDao? = null
-     var definitions = ""
+    private val logger = LoggerFactory.getLogger(DynamicPermissionServiceImpl::class.java)
+    var shiroFilter: AbstractShiroFilter? = null
+    var dynamicPermissionDao: DynamicPermissionDao? = null
+    var definitions = ""
 
     @PostConstruct
     @Synchronized override fun init() {
@@ -64,8 +65,8 @@ class DynamicPermissionServiceImpl : DynamicPermissionService {
         try {
             // 获取和清空初始权限配置
             val manager = getFilterChainManager()
-            newDefinitions.put("/**", "anon")
             addToChain(manager, newDefinitions)
+            newDefinitions.put("/**", "anon")
             logger.debug("更新资源权限配置成功。")
         } catch (e: Exception) {
             logger.error("更新资源权限配置发生错误!", e)
@@ -80,8 +81,8 @@ class DynamicPermissionServiceImpl : DynamicPermissionService {
      * @return Section
      */
     private fun generateSection(): Map<String, String>? {
-        var section:Ini.Section?=null
-        if(StringUtils.hasLength(definitions)) {
+        var section: Ini.Section? = null
+        if (StringUtils.hasLength(definitions)) {
             val ini = Ini()
             ini.load(definitions) // 加载资源文件节点串定义的初始化权限信息
             section = ini.getSection(IniFilterChainResolverFactory.URLS) // 使用默认节点

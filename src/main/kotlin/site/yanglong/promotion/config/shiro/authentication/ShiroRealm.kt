@@ -69,10 +69,6 @@ class ShiroRealm : AuthorizingRealm() {
      * 权限在map中的KEY
      */
     var perms_in_map_key = "perms"
-    /**
-     * 权限过滤器名称
-     */
-    var authenticationFiltername = "authc"
 
     /**
      * 获取认证信息，会通过realmDao或取用户的id和密码【此2项是必须的】，以及用户状态【非必须，当获取为NULL时不会中断认证】
@@ -110,7 +106,7 @@ class ShiroRealm : AuthorizingRealm() {
      * @return
      */
     override fun doGetAuthorizationInfo(principals: PrincipalCollection): AuthorizationInfo? {
-        if (!principals.isEmpty && principals.fromRealm(name).size > 0) {
+        if (!principals.isEmpty && principals.fromRealm(name).isNotEmpty()) {
             val id = principals.fromRealm(name).iterator().next()
             if (id != null) {
                 val info = SimpleAuthorizationInfo()
@@ -125,14 +121,14 @@ class ShiroRealm : AuthorizingRealm() {
                         info.addStringPermissions(perms)
                     }
                 } else if (isEnableRoles && !isEnablePerms) {
-                    val perms = realmService!!.getPermissions(id)
-                    if (perms != null && !perms.isEmpty()) {
-                        info.addStringPermissions(perms)
+                    val roles = realmService?.getRoles(id)
+                    if (null!=roles && !roles.isEmpty()) {
+                        info.addRoles(roles)
                     }
                 } else if (isEnablePerms && !isEnableRoles) {
-                    val roles = realmService!!.getRoles(id)
-                    if (roles != null && !roles.isEmpty()) {
-                        info.addRoles(roles)
+                    val perms = realmService?.getPermissions(id)
+                    if (null!=perms && !perms.isEmpty()) {
+                        info.addStringPermissions(perms)
                     }
                 }
                 return info
@@ -154,7 +150,7 @@ class ShiroRealm : AuthorizingRealm() {
      * @return key
      */
     override fun getAuthorizationCacheKey(principals: PrincipalCollection): Any? {
-        if (!principals.isEmpty && principals.fromRealm(name).size > 0) {
+        if (!principals.isEmpty && principals.fromRealm(name).isNotEmpty()) {
             val id = principals.fromRealm(name).iterator().next()
             if (id != null) {
                 return "DRZ_" + id
@@ -175,7 +171,7 @@ class ShiroRealm : AuthorizingRealm() {
      * @return
      */
     override fun getAuthenticationCacheKey(principals: PrincipalCollection): Any? {
-        if (!principals.isEmpty && principals.fromRealm(name).size > 0) {
+        if (!principals.isEmpty && principals.fromRealm(name).isNotEmpty()) {
             val id = principals.fromRealm(name).iterator().next()
             if (id != null) {
                 return "DRC_" + id
@@ -191,11 +187,11 @@ class ShiroRealm : AuthorizingRealm() {
      * @param token token
      * @return key
      */
-    override fun getAuthenticationCacheKey(token: AuthenticationToken?): Any {
+    override fun getAuthenticationCacheKey(token: AuthenticationToken?): Any? {
         val simpleToken = token as UsernamePasswordToken?
         val id = realmService!!.getUniqueIdentity(simpleToken!!.username.toLowerCase())
         return if (id != null) {
             "DRC_" + id
-        } else ""
+        } else null
     }
 }

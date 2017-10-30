@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache updateCheck="false" name="platformCache">
+	<diskStore path="java.io.tmpdir"/>
+
+    <defaultCache  
+	    maxEntriesLocalHeap="0"  
+	    eternal="false"
+	    overflowToDisk="false"  
+	    maxElementsInMemory="100000"
+	    timeToIdleSeconds="0"  
+	    timeToLiveSeconds="0" logging="false">
+    </defaultCache>
+
+	<!--shiro ehcache-->
+
+	<!--shiro end-->
+
+	<!-- 30分钟的缓存-->
+	<cache name="expiredCache"  maxElementsInMemory="10000"
+		   eternal="false"
+		   overflowToDisk="true"
+		   maxElementsOnDisk="100000"
+		   timeToLiveSeconds="1800"
+		   memoryStoreEvictionPolicy="LFU"
+		   logging="false" >
+	</cache>
+</ehcache>

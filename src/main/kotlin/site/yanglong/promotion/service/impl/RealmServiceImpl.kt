@@ -22,7 +22,7 @@ class RealmServiceImpl : RealmService {
     }
 
     override fun getUserUniqueIdentityAndPassword(userName: String): Map<String, Any> {
-        return mapOf<String, String>("id" to "1", "pwd" to DigestUtils.md5Hex("123456"), "status" to "1")
+        return mapOf<String, String>("id" to "1", "pwd" to DigestUtils.md5Hex("123456"), "status" to "0")
     }
 
     override fun getPermissions(uniqueIdentity: Any): Collection<String> {
@@ -36,6 +36,7 @@ class RealmServiceImpl : RealmService {
     override fun getUserRolesAndPerms(uniqueIdentity: Any): Map<String, Collection<String>> {
         val perms = listOf("a", "b", "c")
         val roles = listOf("user", "admin")
+        println()
         return hashMapOf("perms" to perms, "roles" to roles)
     }
 }
