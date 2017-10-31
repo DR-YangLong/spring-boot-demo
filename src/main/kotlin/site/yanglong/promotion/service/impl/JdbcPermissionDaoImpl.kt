@@ -14,9 +14,10 @@ import java.util.*
 class JdbcPermissionDaoImpl : JdbcPermissionDao {
 
     override fun generateDefinitions(): LinkedHashMap<String, String> {
-        return linkedMapOf("/shiro/admin" to "roles[admin],perms[a]",
-                "/shiro/user" to "roles[user]",
-                "/shiro/perm" to "perms[b]")
+        return linkedMapOf()
+//        return linkedMapOf("/shiro/admin" to "roles[admin],perms[a]",
+//                "/shiro/user" to "roles[user]",
+//                "/shiro/perm" to "perms[b]")
     }
 
     override fun findDefinitionsMap(): Map<String, String> {

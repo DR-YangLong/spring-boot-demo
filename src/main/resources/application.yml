@@ -141,15 +141,15 @@ shiro:
     sessionCookiePath: "/"
     globalSessionTimeout: "1800000"
     definitionMap:
-      admin/**: "authc,roles[admin]"
+      /admin/**: "authc,roles[admin]"
     filtersMap:
-      anon: org.apache.shiro.web.filter.authc.AnonymousFilter.class
-      authc: org.apache.shiro.web.filter.authc.PassThruAuthenticationFilter.class
-      user: org.apache.shiro.web.filter.authc.UserFilter.class
-      logout: org.apache.shiro.web.filter.authc.PassThruAuthenticationFilter.LogoutFilter.class
-      roles: org.apache.shiro.web.filter.authz.RolesAuthorizationFilter.class
-      perms: org.apache.shiro.web.filter.authz.PermissionsAuthorizationFilter.class
-    definitions: "/**/favicon.ico=anon /logout=logout"
+      anon: org.apache.shiro.web.filter.authc.AnonymousFilter
+      authc: org.apache.shiro.web.filter.authc.PassThruAuthenticationFilter
+      user: org.apache.shiro.web.filter.authc.UserFilter
+      logout: org.apache.shiro.web.filter.authc.LogoutFilter
+      roles: org.apache.shiro.web.filter.authz.RolesAuthorizationFilter
+      perms: org.apache.shiro.web.filter.authz.PermissionsAuthorizationFilter
+    definitions: "**/favicon.ico=anon \n /shiro/logout=logout \n /shiro/user=roles['user'] \n /shiro/admin=roles['admin'] \n /shiro/perm=perms['a']"
     enablePerms: "true"
     enableRoles: "true"
     identityInMapKey: "id"

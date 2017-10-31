@@ -96,7 +96,7 @@ class DynamicPermissionServiceImpl : DynamicPermissionService {
         val permissionMap = loadDynamicPermission()
         if (!CollectionUtils.isEmpty(permissionMap)) {
             if (CollectionUtils.isEmpty(section)) {
-                logger.error("*********获取初始静态配置URL权限映射失败，将使用外部加载权限信息进行配置*********")
+                logger.debug("*********获取初始静态配置URL权限映射失败*********")
                 return permissionMap
             } else {
                 section?.putAll(permissionMap)
@@ -113,9 +113,9 @@ class DynamicPermissionServiceImpl : DynamicPermissionService {
         var map = dynamicPermissionDao!!.findDefinitionsMap()
         if (CollectionUtils.isEmpty(map)) {
             map = LinkedHashMap()
-            logger.error("**********没有进行初始化权限配置，将配置为全部不用验证！**********")
+            logger.error("**********没有进行动态权限配置！**********")
         }
-        logger.debug("*************自定义权限配置完成，将其余链接设置为不用验证*************")
+        logger.debug("*************自定义权限配置完成*************")
         return map
     }
 

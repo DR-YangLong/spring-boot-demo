@@ -2,6 +2,7 @@ package site.yanglong.promotion
 
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.cache.annotation.EnableCaching
 import org.springframework.context.ApplicationContext
 
 /**
@@ -12,6 +13,7 @@ import org.springframework.context.ApplicationContext
  * @version 1.0    2017/7/6
  */
 @SpringBootApplication(scanBasePackages = arrayOf("site.yanglong.promotion"))
+@EnableCaching
 class Application
 var context: ApplicationContext?=null
 
