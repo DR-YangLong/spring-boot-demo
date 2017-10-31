@@ -1,4 +1,4 @@
-package site.yanglong.promotion.config
+package site.yanglong.promotion.config.shiro
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Component

@@ -1,4 +1,4 @@
-package site.yanglong.promotion.config
+package site.yanglong.promotion.config.shiro
 
 import org.apache.commons.collections.MapUtils
 import org.apache.shiro.authc.credential.CredentialsMatcher
@@ -28,7 +28,6 @@ import org.springframework.cache.ehcache.EhCacheCacheManager
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.DependsOn
-import site.yanglong.promotion.config.shiro.DrCredentialsMatcher
 import site.yanglong.promotion.config.shiro.authentication.RealmService
 import site.yanglong.promotion.config.shiro.authentication.ShiroRealm
 import site.yanglong.promotion.config.shiro.dynamic.DynamicPermissionServiceImpl
@@ -40,7 +39,7 @@ import javax.servlet.Filter
 class ShiroConfig {
     private val log = LoggerFactory.getLogger(ShiroConfig::class.java)
     @Autowired
-    private var shiroProps:ShiroProperties?=null
+    private var shiroProps: ShiroProperties?=null
     @Autowired
     private var cachemanager: EhCacheCacheManager? = null
     private var shiroFilter: ShiroFilterFactoryBean? = null

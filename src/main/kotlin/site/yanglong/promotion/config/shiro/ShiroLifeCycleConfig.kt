@@ -1,4 +1,4 @@
-package site.yanglong.promotion.config
+package site.yanglong.promotion.config.shiro
 
 import org.apache.shiro.spring.LifecycleBeanPostProcessor
 import org.springframework.context.annotation.Bean
