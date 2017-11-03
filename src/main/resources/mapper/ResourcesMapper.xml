@@ -2,12 +2,64 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="site.yanglong.promotion.mapper.ResourcesMapper">
 
-	<!-- 通用查询映射结果 -->
-	<resultMap id="BaseResultMap" type="site.yanglong.promotion.model.Resources">
-		<id column="id" property="id" />
-		<result column="uri" property="uri" />
-		<result column="name" property="name" />
-		<result column="enable" property="enable" />
-	</resultMap>
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="site.yanglong.promotion.model.Resources">
+        <id column="id" property="id"/>
+        <result column="uri" property="uri"/>
+        <result column="name" property="name"/>
+        <result column="enable" property="enable"/>
+    </resultMap>
 
+    <resultMap id="Permission_ResultMap" type="site.yanglong.promotion.model.dto.UriPermissions">
+        <id column="id" property="id"/>
+        <result column="uri" property="uri"/>
+        <collection property="roles" ofType="string" javaType="ArrayList">
+            <result column="roles"/>
+        </collection>
+        <collection property="perms" ofType="string" javaType="ArrayList">
+            <result column="perms"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="Permission_Role_ResultMap" type="site.yanglong.promotion.model.dto.UriPermissions">
+        <id column="id" property="id"/>
+        <result column="uri" property="uri"/>
+        <collection property="roles" ofType="string" javaType="ArrayList">
+            <result column="roles"/>
+        </collection>
+    </resultMap>
+
+
+    <resultMap id="Permission_Perm_ResultMap" type="site.yanglong.promotion.model.dto.UriPermissions">
+        <id column="id" property="id"/>
+        <result column="uri" property="uri"/>
+        <collection property="perms" ofType="string" javaType="ArrayList">
+            <result column="perms"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectDefinitions" resultMap="Permission_ResultMap">
+		SELECT ro.id,ro.uri,ro.roles,po.perms
+        FROM
+        (SELECT res.id,res.uri,r.identify roles
+        FROM resources res,roles_resources rr,roles r
+        WHERE res.id=rr.resId AND rr.roleId=r.id) ro,
+        (SELECT res.id,res.uri,p.identify perms
+        FROM resources res,perms_resources pr,perms p
+        WHERE res.id=pr.resId AND pr.permId=p.id) po
+        WHERE ro.id=po.id
+	</select>
+
+    <select id="selectRoles" resultMap="Permission_Role_ResultMap">
+        SELECT res.id,res.uri,r.identify roles
+        FROM resources res,roles_resources rr,roles r
+        WHERE res.id=rr.resId AND rr.roleId=r.id
+        ORDER BY res.id
+    </select>
+    <select id="selectPerms" resultMap="Permission_Perm_ResultMap">
+      SELECT res.id,res.uri,p.identify perms
+      FROM resources res,perms_resources pr,perms p
+      WHERE res.id=pr.resId AND pr.permId=p.id
+      ORDER BY res.id
+    </select>
 </mapper>

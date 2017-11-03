@@ -3,6 +3,7 @@ package site.yanglong.promotion.service
 import com.baomidou.mybatisplus.service.IService
 import com.jarvis.cache.annotation.Cache
 import site.yanglong.promotion.model.UserBase
+import site.yanglong.promotion.model.dto.UserPermissions
 
 /**
  * package: site.yanglong.promotion.service <br/>
@@ -17,4 +18,6 @@ interface UserService :IService<UserBase>{
 
 
     fun updateByOptimisticLock(user:UserBase):Boolean
+
+    fun listUserPermissions(userId:Long):UserPermissions
 }

@@ -4,6 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.util.CollectionUtils
 import org.springframework.web.bind.annotation.*
 import site.yanglong.promotion.model.UserBase
+import site.yanglong.promotion.model.dto.UriPermissions
+import site.yanglong.promotion.model.dto.UserPermissions
+import site.yanglong.promotion.service.ResourcesService
 import site.yanglong.promotion.service.UserService
 import site.yanglong.promotion.vo.Status
 import site.yanglong.promotion.vo.StatusResult
@@ -21,6 +24,8 @@ class UserController {
 
     @Autowired
     private val userService: UserService? = null
+    @Autowired
+    private val resourceService:ResourcesService?=null
 
     @PostMapping("add")
     fun addUser(user: UserBase): UserBase {
@@ -70,5 +75,16 @@ class UserController {
         val success: Boolean = userService?.updateByOptimisticLock(user) ?: false
         if (success) result.setStatus(Status.SUCCESS) else result.setStatus(Status.NORMAL_FAILURE)
         return result
+    }
+
+    @GetMapping("permissions")
+    fun permissions(userId: Long): UserPermissions? {
+        val permissions = userService?.listUserPermissions(userId)
+        return permissions
+    }
+
+    @GetMapping("uri")
+    fun uri():List<UriPermissions>?{
+        return resourceService?.listDefinitions()
     }
 }

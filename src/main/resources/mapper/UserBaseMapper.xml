@@ -22,4 +22,18 @@
     <update id="updateAppToken">
         UPDATE user_base SET appToken=NULL WHERE appToken=#{token}
     </update>
+
+    <select id="selectPerms" resultType="string">
+        SELECT ps.identify perms
+        FROM user_perms p,perms ps
+        WHERE ps.id=p.permId
+        AND p.userId=#{userId}
+    </select>
+
+    <select id="selectRoles" resultType="string">
+        select rs.identify roles
+        FROM user_roles r,roles rs
+        WHERE r.roleId=rs.id
+        AND r.userId=#{userId}
+    </select>
 </mapper>

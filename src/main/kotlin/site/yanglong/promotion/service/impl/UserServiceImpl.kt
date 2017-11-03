@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl
 import org.springframework.stereotype.Service
 import site.yanglong.promotion.mapper.UserBaseMapper
 import site.yanglong.promotion.model.UserBase
+import site.yanglong.promotion.model.dto.UserPermissions
 import site.yanglong.promotion.service.UserService
 
 /**
@@ -34,5 +35,14 @@ class UserServiceImpl : ServiceImpl<UserBaseMapper, UserBase>(), UserService {
             return baseMapper.updateById(user) > 0
         }
         return false
+    }
+
+    override fun listUserPermissions(userId: Long): UserPermissions {
+        var permissions = UserPermissions()
+        val perms = baseMapper.selectPerms(userId)
+        val roles = baseMapper.selectRoles(userId)
+        permissions.perms = perms
+        permissions.roles = roles
+        return permissions
     }
 }

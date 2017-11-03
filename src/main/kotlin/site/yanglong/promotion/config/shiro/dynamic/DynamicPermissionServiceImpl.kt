@@ -58,6 +58,7 @@ class DynamicPermissionServiceImpl : DynamicPermissionService {
             val chainDefinition = value.trim { it <= ' ' }.replace(" ", "")
             manager.createChain(url, chainDefinition)
         }
+        manager.createChain("/**", "anon")
     }
 
     @Synchronized override fun updatePermission(newDefinitions: LinkedHashMap<String, String>) {
@@ -66,7 +67,6 @@ class DynamicPermissionServiceImpl : DynamicPermissionService {
             // 获取和清空初始权限配置
             val manager = getFilterChainManager()
             addToChain(manager, newDefinitions)
-            newDefinitions.put("/**", "anon")
             logger.debug("更新资源权限配置成功。")
         } catch (e: Exception) {
             logger.error("更新资源权限配置发生错误!", e)

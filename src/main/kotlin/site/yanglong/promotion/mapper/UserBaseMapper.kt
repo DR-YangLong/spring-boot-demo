@@ -14,4 +14,8 @@ interface UserBaseMapper :BaseMapper<UserBase> {
     fun deleteToken(token: String): Int
 
     fun updateAppToken(token: String): Int
+
+    fun selectPerms(userId:Long):List<String>
+
+    fun selectRoles(userId: Long):List<String>
 }

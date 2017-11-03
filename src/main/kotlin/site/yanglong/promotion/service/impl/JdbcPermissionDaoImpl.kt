@@ -1,7 +1,9 @@
 package site.yanglong.promotion.service.impl
 
-import org.springframework.stereotype.Repository
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
 import site.yanglong.promotion.config.shiro.dynamic.JdbcPermissionDao
+import site.yanglong.promotion.service.ResourcesService
 import java.util.*
 
 /**
@@ -10,14 +12,14 @@ import java.util.*
  * @author DR.YangLong [410357434@163.com]
  * @version 1.0    2017/10/20
  */
-@Repository
+@Component
 class JdbcPermissionDaoImpl : JdbcPermissionDao {
 
+    @Autowired
+    private val resourceService: ResourcesService?=null
+
     override fun generateDefinitions(): LinkedHashMap<String, String> {
-        return linkedMapOf()
-//        return linkedMapOf("/shiro/admin" to "roles[admin],perms[a]",
-//                "/shiro/user" to "roles[user]",
-//                "/shiro/perm" to "perms[b]")
+        return resourceService?.definitionsMap()?: linkedMapOf()
     }
 
     override fun findDefinitionsMap(): Map<String, String> {
