@@ -1,5 +1,5 @@
 spring.datasource:
-    url: "jdbc:mysql://127.0.0.1:3306/test?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=false"
+    url: "jdbc:mysql://127.0.0.1:3306/test?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=false&serverTimezone=UTC"
     username: "root"
     password: "fA0iTfSAyZ9YT5WkDfvVoAAHA41gkeYYsdMNqQJFR2eWooxXjg9GWEt9BkaKLt0NkKZfv8/PiQYDpJ9pTSI3NA=="
     connectionProperties: "config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBALJUQV+coCweLv6wq+oavcy17n+XYOTo3jBKu3tfKE+1REum9Aihi/SPYLd88eXcdfjq5yawdMK2wJeZxiIVQv0CAwEAAQ=="
